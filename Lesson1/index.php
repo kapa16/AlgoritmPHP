@@ -1,15 +1,9 @@
 <?php
 
-$path = $_POST['path'] ?: __DIR__;
+echo '<h2>TASK 1</h2>';
+require_once __DIR__ . '/task1.php';
+echo '<hr>';
 
-$iterator = new DirectoryIterator($path);
-
-while ($iterator->valid()) {
-    var_dump($iterator);
-    if ($iterator->isDir()) {
-        echo "<a href='task1.php?path={$iterator->getPathname()}'>{$iterator->getFilename()}</a><br>";
-    } else {
-        echo "<p>{$iterator->getFilename()}</p><br>";
-    }
-    $iterator->next();
-}
+echo '<h2>TASK 2</h2>';
+echo 'Run from console';
+echo '<hr>';
