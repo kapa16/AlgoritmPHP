@@ -47,12 +47,3 @@ $stop = microtime(true);
 
 echo 'foreach ($arr as $value): ' . ($stop - $start) . PHP_EOL;
 
-
-//iterator: 3.5592031478882
-//foreach ($arr as $key => $value): 0.34501981735229
-//foreach ($arr as $value): 0.17900991439819
-
-//Sandbox
-//iterator: 0.0850830078125
-//foreach ($arr as $key => $value): 0.11609816551208
-//foreach ($arr as $value): 0.014111995697021

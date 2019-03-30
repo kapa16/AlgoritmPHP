@@ -9,5 +9,5 @@ echo 'Run from console';
 echo '<hr>';
 
 echo '<h2>TASK 3</h2>';
-require_once __DIR__ . '/task3.php';
+echo "don't understand how use demon";
 echo '<hr>';
