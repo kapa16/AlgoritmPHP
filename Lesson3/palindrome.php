@@ -1,23 +1,24 @@
 <?php
 
-function testPalindrome(array $arr = []): bool
+function testPalindrome(array $arr = []): string
 {
     if (count($arr) <= 1) {
-        return true;
+        return 'Полиндром';
     }
     if (array_shift($arr) === array_pop($arr)) {
-        testPalindrome($arr);
-    } else {
-        return false;
+        return testPalindrome($arr);
     }
+    return 'Не полиндром';
 }
 
-function palindrome(string $str = ''): bool
+function palindrome(string $str = ''): string
 {
     $str = mb_strtolower($str);
-    $strArr = explode('', $str);
-    return testPalindrome($strArr);
+    $strArr = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
+    return $str . ' - ' . testPalindrome($strArr) . '<br>';
 }
 
-echo palindrome('тест');
-echo palindrome('nhyyhn');
+echo palindrome('palindrome');
+echo palindrome('Racecar');
+echo palindrome('Rotator');
+echo palindrome('Redder');
