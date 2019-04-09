@@ -13,14 +13,20 @@ if (mysqli_num_rows($result) > 0) {
     }
 }
 
-function buildTree(array $categories, $left = 1): string
+function buildTree(array $categories, $key = 1, $left = 1): string
 {
     $tree = '<ul>';
+var_dump($tree);
+    if (count($categories) < $key) {
+        $tree .='</ul>';
+        return $tree;
+    }
+    if (!empty($categories[$key])) {
+        buildTree($categories, $key + 1, $left -1);
+    }
+    $tree .= '<li>' . $categories[$key]['title'] . '</li>';
 
-    $tree .= $categories[$left];
 
-    $tree .='</ul>';
-    return $tree;
 }
 
 echo buildTree($categories);

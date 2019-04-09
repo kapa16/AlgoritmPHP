@@ -1,25 +1,30 @@
 -- Создаём структуру, дерева, какой оно является в режиме AL
 DROP TABLE IF EXISTS tree;
+
 CREATE TABLE tree (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255),
-    parent_id INT NULL
+    parent_id INT NULL,
+    level INT(10) NOT NULL DEFAULT 0
 );
 
-INSERT INTO tree (id, title, parent_id) VALUES
-(1, 'Одежда', NULL),
-(2, 'Брюки', 1),
-(3, 'Платья', 1),
-(4, 'Юбки', 1),
-(5, 'Клёш', 2),
-(6, 'Футляр', 3),
-(7, 'В пол', 3),
-(8, 'С открытыми плечами', 7);
+INSERT INTO tree (id, title, parent_id, level) VALUES
+(1, 'Одежда', NULL, 0),
+(2, 'Брюки', 1, 1),
+(3, 'Платья', 1, 1),
+(4, 'Юбки', 1, 1),
+(5, 'Клёш', 2, 2),
+(6, 'Футляр', 3, 2),
+(7, 'В пол', 3, 2),
+(8, 'С открытыми плечами', 7, 3);
+
+
+-- Добавляем дереву NS колонки
+ALTER TABLE tree
+    ADD COLUMN lft INT(11) UNSIGNED,
+    ADD COLUMN rgt INT(11) UNSIGNED;
 
 DELIMITER //
--- Добавляем дереву NS колонки
-ALTER TABLE tree ADD COLUMN lft INT(11) UNSIGNED, ADD COLUMN rgt INT(11) UNSIGNED//
-
 -- Создаём ту самую функцию
 DROP FUNCTION IF EXISTS rebuild_nested_set_tree//
 CREATE FUNCTION rebuild_nested_set_tree()

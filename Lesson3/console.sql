@@ -19,15 +19,6 @@ VALUES (1, 0, 'Категория 1'),
        (7, 2, 'Категория 2.1'),
        (8, 2, 'Категория 2.2');
 
-
-
-SELECT *
-FROM alg.categories AS c
-         INNER JOIN alg.category_links AS cl
-                    ON c.id_category = cl.child_id
-WHERE cl.parent_id = 3;
-
-
 CREATE TABLE `categories`
 (
     `id_category`   int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -61,6 +52,11 @@ VALUES (1, 1, 0),
        (3, 3, 1),
        (3, 5, 2);
 
+SELECT *
+FROM alg.categories AS c
+         INNER JOIN alg.category_links AS cl
+                    ON c.id_category = cl.child_id
+WHERE cl.parent_id = 3;
 
 SELECT c.id_category as id, c.category_name as `name`, cl.parent_id, cl.level
 FROM `categories` AS `c`
