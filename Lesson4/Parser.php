@@ -2,12 +2,12 @@
 
 class Parser
 {
-    private $config = [
-        '-' => ['priority' => '2', 'association' => 'left'],
-        '+' => ['priority' => '2', 'association' => 'left'],
-        '*' => ['priority' => '3', 'association' => 'left'],
-        '/' => ['priority' => '3', 'association' => 'left'],
-        '^' => ['priority' => '4', 'association' => 'right'],
+    private $operationPriority = [
+        '-' => 2,
+        '+' => 2,
+        '*' => 3,
+        '/' => 3,
+        '^' => 4,
     ];
     private $stack;
     private $buffer = [];
@@ -19,11 +19,11 @@ class Parser
 
     public function run($str): array
     {
-        $arr = $this->prepareString($str);
+        $arr = $this->prepareStringToArray($str);
         return $this->parse($arr);
     }
 
-    private function prepareString($str)
+    private function prepareStringToArray($str)
     {
         $str = preg_replace('/\s/', '', $str);
         $str = str_replace(',', '.', $str);
@@ -40,16 +40,10 @@ class Parser
             }
 
             $lastOperation = $this->stack->pop();
-            $prevPriority = $this->config[$lastOperation]['priority'];
-            $currentPriority = $this->config[$value]['priority'];
-            $currentAssociation = $this->config[$value]['association'];
+            $prevPriority = $this->operationPriority[$lastOperation];
+            $currentPriority = $this->operationPriority[$value];
 
-            if (($currentAssociation === 'left') && $currentPriority > $prevPriority) {
-                $this->stack->push($lastOperation);
-                $this->stack->push($value);
-                break;
-            }
-            if (($currentAssociation === 'right') && $currentPriority >= $prevPriority) {
+            if ($currentPriority >= $prevPriority) {
                 $this->stack->push($lastOperation);
                 $this->stack->push($value);
                 break;
@@ -62,31 +56,27 @@ class Parser
     {
         $lastSymbolIsNumber = true;
         foreach ($arr as $key => $value) {
-            if (preg_match('/[\+\-\*\/\^]/', $value)) {
-                $this->pushOperation($value);
-                $lastSymbolIsNumber = false;
-            }
             if (preg_match('/[0-9a-zA-Z\.]/', $value)) {
                 if ($lastSymbolIsNumber) {
                     $this->buffer[] = array_pop($this->buffer) . $value;
                 } else {
                     $this->buffer[] = $value;
-                    $lastSymbolIsNumber = true;
                 }
+                $lastSymbolIsNumber = true;
+                continue;
+            }
+            $lastSymbolIsNumber = false;
+            if (preg_match('/[\+\-\*\/\^]/', $value)) {
+                $this->pushOperation($value);
             }
             if ($value === '(') {
                 $this->stack->push($value);
-                $lastSymbolIsNumber = false;
             }
             if ($value === ')') {
-                while (true) {
+                do {
                     $symbol = $this->stack->pop();
-                    if ($symbol === '(') {
-                        break;
-                    }
                     $this->buffer[] = $symbol;
-                }
-                $lastSymbolIsNumber = false;
+                } while ($symbol !== '(');
             }
         }
 
