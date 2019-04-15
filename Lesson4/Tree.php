@@ -4,29 +4,23 @@ class Tree
 {
     private $stack;
     private $root;
-    private $x;
-    private $y;
-    private $z;
-    private $vars = [
-        'x',
-        'y',
-        'z'
-    ];
+    private $variables;
 
     public function __construct()
     {
         $this->stack = new SplStack();
     }
 
-    public function runCalculation($x = 0, $y = 0, $z = 0)
+    public function runCalculation(array $variables = [])
     {
-        if (is_numeric($x) && is_numeric($y) && is_numeric($z)) {
-            $this->x = $x;
-            $this->y = $y;
-            $this->z = $z;
-            return $this->calculate(clone $this->root);
+        foreach ($variables as $value) {
+            if (!is_numeric($value)) {
+                return 'Variable not a number';
+            }
         }
-        return 'not a number';
+        $this->variables = $variables;
+        return $this->calculate(clone $this->root);
+
     }
 
     public function buildTree($arr)
@@ -37,7 +31,7 @@ class Tree
         $this->root = $this->stack->pop();
         return $this->root;
     }
-    
+
     private function insert($item): void
     {
         if (preg_match('/[0-9a-zA-Z\.]/', $item)) {
@@ -51,49 +45,35 @@ class Tree
 
     private function calculate(Node $node)
     {
-        if (preg_match('/[0-9a-zA-Z\.]/', $node->value)) {
-            if (in_array($node->value, $this->vars, true)) {
-                return $this->assignValue($node->value);
-            }
+        if (preg_match('/[0-9\.]/', $node->value)) {
             return $node->value;
         }
 
+        if (preg_match('/[a-zA-Z]/', $node->value)) {
+            return $this->variables[$node->value] ?? 0;
+        }
+
         if (preg_match('/[\+\-\*\/\^]/', $node->value)) {
+            $left = $this->calculate($node->left);
+            $right = $this->calculate($node->right);
+
             switch ($node->value) {
-                case '+': {
-                    return $this->calculate($node->right) + $this->calculate($node->left);
-                }
-                case '-': {
-                    return $this->calculate($node->right) - $this->calculate($node->left);
-                }
-                case '*': {
-                    return $this->calculate($node->right) * $this->calculate($node->left);
-                }
-                case '^': {
-                    return $this->calculate($node->right) ** (int)$this->calculate($node->left);
-                }
-                case '/': {
+                case '+':
+                    return $right + $left;
+                case '-':
+                    return $right - $left;
+                case '*':
+                    return $right * $left;
+                case '^':
+                    return $right ** (int)$left;
+                case '/':
                     try {
-                        return $this->calculate($node->right) / $this->calculate($node->left);
+                        return $right / $left;
                     } catch (ArithmeticError $e) {
                         exit('division by zero' . $e->getTraceAsString());
                     }
-                }
             }
         }
     }
 
-    private function assignValue($value)
-    {
-        switch ($value) {
-            case 'x':
-                return $this->x;
-            case 'y':
-                return $this->y;
-            case 'z':
-                return $this->z;
-            default:
-                exit('not accepted variable');
-        }
-    }
 }
